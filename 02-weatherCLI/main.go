@@ -13,56 +13,58 @@ import (
 )
 
 func main() {
+	for {
+		fmt.Println("Press Ctrl + C to quit")
+		fmt.Print("Please enter your city name: ")
+		input := bufio.NewScanner(os.Stdin)
+		input.Scan()
+		city := input.Text()
 
-	fmt.Print("Please enter your city name: ")
-	input := bufio.NewScanner(os.Stdin)
-	input.Scan()
-	city := input.Text()
-
-	if city == "" {
-		city = "stockholm"
-	}
-
-	res, err := http.Get("http://api.weatherapi.com/v1/forecast.json?q=" + city + "&key=1b12545642964a19a8a132630232005")
-	panicErr(err)
-
-	defer res.Body.Close()
-	if res.StatusCode != 200 {
-		panic("Weather api not available.")
-	}
-
-	body, err := io.ReadAll(res.Body)
-	panicErr(err)
-
-	var weather Weather
-
-	err = json.Unmarshal(body, &weather)
-	panicErr(err)
-
-	location, current, hours := weather.Location, weather.Current, weather.Forecast.Forecastday[0].Hour
-
-	fmt.Printf("\n%s, %s: %.0fC %s\n",
-		location.Name,
-		location.Country,
-		current.TempC,
-		current.Condition.Text)
-
-	for _, hour := range hours {
-		date := time.Unix(hour.TimeEpoch, 0)
-		if date.Before(time.Now()) {
-			continue
+		if city == "" {
+			city = "stockholm"
 		}
-		message := fmt.Sprintf("%s - %.0fC %.0f%% %s\n",
-			date.Format("15.04"),
-			hour.TempC,
-			hour.ChanceOfRain,
-			hour.Condition.Text)
 
-		if hour.ChanceOfRain < 40 {
-			fmt.Print(message)
-		} else {
-			color.Cyan(message)
+		res, err := http.Get("http://api.weatherapi.com/v1/forecast.json?q=" + city + "&key=1b12545642964a19a8a132630232005")
+		panicErr(err)
+
+		if res.StatusCode != 200 {
+			panic("Weather api not available.")
 		}
+
+		body, err := io.ReadAll(res.Body)
+		panicErr(err)
+
+		var weather Weather
+
+		err = json.Unmarshal(body, &weather)
+		panicErr(err)
+
+		location, current, hours := weather.Location, weather.Current, weather.Forecast.Forecastday[0].Hour
+
+		fmt.Printf("\n%s, %s: %.0fC %s\n",
+			location.Name,
+			location.Country,
+			current.TempC,
+			current.Condition.Text)
+
+		for _, hour := range hours {
+			date := time.Unix(hour.TimeEpoch, 0)
+			if date.Before(time.Now()) {
+				continue
+			}
+			message := fmt.Sprintf("%s - %.0fC %.0f%% %s\n",
+				date.Format("15.04"),
+				hour.TempC,
+				hour.ChanceOfRain,
+				hour.Condition.Text)
+
+			if hour.ChanceOfRain < 40 {
+				fmt.Print(message)
+			} else {
+				color.Cyan(message)
+			}
+		}
+		fmt.Println("")
 	}
 }
 
