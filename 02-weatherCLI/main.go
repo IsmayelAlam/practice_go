@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -12,10 +13,14 @@ import (
 )
 
 func main() {
-	city := "stockholm"
 
-	if len(os.Args) >= 2 {
-		city = os.Args[1]
+	fmt.Print("Please enter your city name: ")
+	input := bufio.NewScanner(os.Stdin)
+	input.Scan()
+	city := input.Text()
+
+	if city == "" {
+		city = "stockholm"
 	}
 
 	res, err := http.Get("http://api.weatherapi.com/v1/forecast.json?q=" + city + "&key=1b12545642964a19a8a132630232005")
@@ -36,7 +41,7 @@ func main() {
 
 	location, current, hours := weather.Location, weather.Current, weather.Forecast.Forecastday[0].Hour
 
-	fmt.Printf("%s, %s: %.0fC %s\n",
+	fmt.Printf("\n%s, %s: %.0fC %s\n",
 		location.Name,
 		location.Country,
 		current.TempC,
