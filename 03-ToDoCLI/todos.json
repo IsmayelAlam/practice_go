@@ -1,0 +1,20 @@
+[
+   {
+      "Title": "hello",
+      "Completed": false,
+      "CreatedAt": "2025-02-09T21:58:41.098267+01:00",
+      "CompletedAt": null
+   },
+   {
+      "Title": "world",
+      "Completed": true,
+      "CreatedAt": "2025-02-09T21:58:41.098268+01:00",
+      "CompletedAt": "2025-02-09T21:58:41.098268+01:00"
+   },
+   {
+      "Title": "a new todo",
+      "Completed": true,
+      "CreatedAt": "2025-02-09T22:24:10.189319+01:00",
+      "CompletedAt": "2025-02-09T22:25:38.053225+01:00"
+   }
+]
